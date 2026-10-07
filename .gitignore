@@ -1,0 +1,26 @@
+# Credentials and secrets
+secret.key
+config.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+dist/
+*.egg-info/
+.eggs/
+venv/
+.venv/
+env/
+
+# Logs
+*.log
+
+# Working and output directories
+work/
+debug/
+OLD/
+
+# IDE
+.vscode/
+.idea/

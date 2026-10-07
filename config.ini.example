@@ -1,20 +1,20 @@
 [IDMC]
-username = shayes_compass
-password = Infa2026c!
-encrypted_password = 
-pod = dmp-us
-catalog_resource_name = NSEN Snowflake Retail Marketing
+username = your_idmc_username
+password =
+encrypted_password =
+pod = dm-us
+catalog_resource_name = Your Snowflake Resource Name
 debug = False
 
 [TagWriteback]
 writeback_business_term = True
-writeback_business_term_tag = nsen.nsen_dw.infa_business_term
+writeback_business_term_tag = schema.database.infa_business_term
 writeback_parent_policy = True
-writeback_parent_policy_tag = nsen.nsen_dw.infa_policy
+writeback_parent_policy_tag = schema.database.infa_policy
 writeback_classification = True
-writeback_classification_tag = nsen.nsen_dw.infa_classification
+writeback_classification_tag = schema.database.infa_classification
 writeback_dq_score = True
-writeback_dq_score_tag = nsen.nsen_dw.infa_dq_score
+writeback_dq_score_tag = schema.database.infa_dq_score
 writeback_description = True
 full_object_report = False
 
@@ -22,17 +22,16 @@ unset_tags_first = True
 stop_and_verify = True
 
 [Snowflake]
-account = eeb76041
-database = NSEN
-username = SHAYES
+account = your_account_identifier
+database = YOUR_DATABASE
+username = YOUR_USERNAME
 password =
-encrypted_password = 
-role = ACCOUNTADMIN
+encrypted_password =
+role = YOUR_ROLE
 # Optional: path to a private key file for key-pair authentication.
 # If set, password/encrypted_password are ignored.
 # Windows example: private_key_file = C:\Users\YourName\.ssh\snowflake_key.p8
 # Mac/Linux example: private_key_file = /Users/yourname/.ssh/snowflake_key.p8
-private_key_file = C:\Work\Product Specialist\Enablement & Cheat Sheets - Cloud\Sources\Snowflake\snowflake_SHAYES_rsa_key.p8
+private_key_file =
 # Optional: passphrase to decrypt the private key file (leave blank if unencrypted).
-private_key_passphrase = 1234
-
+private_key_passphrase =

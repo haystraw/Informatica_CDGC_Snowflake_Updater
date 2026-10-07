@@ -626,12 +626,14 @@ capture_raw_objects      = False
 capture_raw_object_names = []  # e.g. ['NS_MKTG_USER', 'MKTG_EMAIL_ID']
 
 # --- Snowflake ---
-sf_account            = config['Snowflake'].get('account')
-sf_database           = config['Snowflake'].get('database')
-sf_username           = config['Snowflake'].get('username')
-sf_password           = config['Snowflake'].get('password', '')
-encrypted_sf_password = config['Snowflake'].get('encrypted_password', '')
-sf_role               = config['Snowflake'].get('role')
+sf_account              = config['Snowflake'].get('account')
+sf_database             = config['Snowflake'].get('database')
+sf_username             = config['Snowflake'].get('username')
+sf_password             = config['Snowflake'].get('password', '')
+encrypted_sf_password   = config['Snowflake'].get('encrypted_password', '')
+sf_role                 = config['Snowflake'].get('role')
+sf_private_key_file     = config['Snowflake'].get('private_key_file', '').strip()
+sf_private_key_pass     = config['Snowflake'].get('private_key_passphrase', '').strip()
 
 cdgc_debug = debugFlag
 
@@ -874,16 +876,22 @@ for r in session.resources:
 if stop_and_verify:
     input("Press any key to continue...")
 
-if len(encrypted_sf_password) > 2:
-    sf_password = decrypt_message(encrypted_sf_password)
+if sf_private_key_file:
+    from cryptography.hazmat.primitives.serialization import load_pem_private_key, Encoding, PrivateFormat, NoEncryption
+    from cryptography.hazmat.backends import default_backend
+    _passphrase = sf_private_key_pass.encode() if sf_private_key_pass else None
+    with open(sf_private_key_file, 'rb') as _kf:
+        _private_key_obj = load_pem_private_key(_kf.read(), password=_passphrase, backend=default_backend())
+    _private_key_bytes = _private_key_obj.private_bytes(Encoding.DER, PrivateFormat.PKCS8, NoEncryption())
+    sf_connect_kwargs = dict(account=sf_account, user=sf_username, private_key=_private_key_bytes, database=sf_database, role=sf_role)
+    print(f"INFO: Connecting to Snowflake as {sf_username} using key-pair authentication")
+else:
+    if len(encrypted_sf_password) > 2:
+        sf_password = decrypt_message(encrypted_sf_password)
+    sf_connect_kwargs = dict(account=sf_account, user=sf_username, password=sf_password, database=sf_database, role=sf_role)
+    print(f"INFO: Connecting to Snowflake as {sf_username} using password authentication")
 
-with snowflake.connector.connect(
-    account=sf_account,
-    user=sf_username,
-    password=sf_password,
-    database=sf_database,
-    role=sf_role
-) as conn:
+with snowflake.connector.connect(**sf_connect_kwargs) as conn:
     with conn.cursor() as cursor:
         # Attempt to create any enabled tags — warns and continues if permission is denied
         tags_to_create = []
